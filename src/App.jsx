@@ -8,39 +8,47 @@ function App() {
   const handleMint = async () => {
     try {
       if (!window.keplr) {
-        alert("Keplr not installed.");
+        alert("Please install Keplr wallet first.");
         return;
       }
 
       await window.keplr.enable(chainId);
-      const signer = await window.getOfflineSignerAuto(chainId);
-      const gasPrice = GasPrice.fromString("0.075ucore");
-      const client = await SigningCosmWasmClient.connectWithSigner(rpc, signer, { gasPrice });
+      const offlineSigner = await window.getOfflineSignerAuto(chainId);
+      const accounts = await offlineSigner.getAccounts();
+      const myAddress = accounts[0].address;
 
-      const accounts = await signer.getAccounts();
-      const sender = accounts[0].address;
+      const client = await SigningCosmWasmClient.connectWithSigner(rpc, offlineSigner, {
+        gasPrice: GasPrice.fromString("0.075ucore"),
+      });
+
+      const contractAddress = "core1xyz...your_contract_here"; // TODO: update with real contract
 
       const msg = {
-        sender,
-        contract: "core1xyz...your_contract_here", // replace with your contract
-        msg: {}, // replace with real payload
-        funds: [],
+        mint_pass: {
+          expires_in_days: 30,
+          tier: "standard"
+        }
       };
 
-      const result = await client.execute(sender, msg.contract, msg.msg, "auto");
-      console.log("✅ Mint successful:", result);
-      alert("Mint successful!");
+      const fee = {
+        amount: [{ denom: "ucore", amount: "5000" }],
+        gas: "200000",
+      };
+
+      const result = await client.execute(myAddress, contractAddress, msg, fee);
+      console.log("✅ Pass minted! TX hash:", result.transactionHash);
+      alert(`✅ Pass minted! TX hash: ${result.transactionHash}`);
     } catch (err) {
       console.error("❌ Execute error:", err);
-      alert("Minting failed.");
+      alert("❌ Minting failed. See console for details.");
     }
   };
 
   return (
     <div style={{ textAlign: "center", marginTop: "5rem" }}>
-      <h1 style={{marginBottom:"20px"}}>SoloPass Mint Demo (Mainnet)</h1>
+      <h1>SoloPass Mint Demo (Mainnet)</h1>
       <button onClick={handleMint} style={{ padding: "10px 20px" }}>
-        Mint Token
+        Mint SoloPass Token
       </button>
     </div>
   );
