@@ -1,46 +1,87 @@
-import React from "react";
-import { ChainProvider } from "@cosmos-kit/react";
-import { keplrWallets } from "@cosmos-kit/keplr";
-import { chainInfo } from "./coreum-chain";
-import { KeplrConnectButton } from "./KeplrConnectButton";
+import { useEffect, useState } from "react";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { useWallet } from "@cosmos-kit/react";
 
-export default function App() {
+const rpcEndpoint = "https://full-node.mainnet-1.coreum.dev:26657";
+const chainId = "coreum-mainnet-1";
+
+function App() {
+  const { connect, disconnect, connected, getOfflineSigner, address } = useWallet();
+  const [client, setClient] = useState<SigningCosmWasmClient | null>(null);
+
+  useEffect(() => {
+    if (!connected) return;
+
+    const setupClient = async () => {
+      try {
+        const signer = await getOfflineSigner();
+        const client = await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, signer);
+        setClient(client);
+      } catch (error) {
+        console.error("❌ Execute error:", error);
+      }
+    };
+
+    setupClient();
+  }, [connected]);
+
   return (
-    <ChainProvider
-      chains={[chainInfo]}
-      assetLists={[chainInfo]}
-      wallets={keplrWallets}
-      walletConnectOptions={{
-        signClient: {
-          projectId: "demo",
-          relayUrl: "wss://relay.walletconnect.org",
-          metadata: {
-            name: "SoloPass Demo",
-            description: "SoloPass Minting App",
-            url: "https://your-app-url.com",
-            icons: ["https://your-app-url.com/favicon.ico"]
-          }
-        }
-      }}
-      signerOptions={{
-        signingStargate: () => ({
-          preferNoSetFee: true,
-          disableBalanceCheck: true
-        })
-      }}
-    >
-      <main
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "1rem",
-          paddingTop: "5rem"
-        }}
-      >
-        <h1>SoloPass</h1>
-        <KeplrConnectButton />
-      </main>
-    </ChainProvider>
+    <div>
+      <h1>SoloPass Mint Demo (Mainnet)</h1>
+      {connected ? (
+        <div>
+          <p>🔗 Connected as: {address}</p>
+          <button onClick={disconnect}>Disconnect</button>
+        </div>
+      ) : (
+        <button onClick={connect}>Connect Wallet</button>
+      )}
+    </div>
   );
 }
+
+export default App;
+import { useEffect, useState } from "react";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { useWallet } from "@cosmos-kit/react";
+
+const rpcEndpoint = "https://full-node.mainnet-1.coreum.dev:26657";
+const chainId = "coreum-mainnet-1";
+
+function App() {
+  const { connect, disconnect, connected, getOfflineSigner, address } = useWallet();
+  const [client, setClient] = useState<SigningCosmWasmClient | null>(null);
+
+  useEffect(() => {
+    if (!connected) return;
+
+    const setupClient = async () => {
+      try {
+        const signer = await getOfflineSigner();
+        const client = await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, signer);
+        setClient(client);
+      } catch (error) {
+        console.error("❌ Execute error:", error);
+      }
+    };
+
+    setupClient();
+  }, [connected]);
+
+  return (
+    <div>
+      <h1>SoloPass Mint Demo (Mainnet)</h1>
+      {connected ? (
+        <div>
+          <p>🔗 Connected as: {address}</p>
+          <button onClick={disconnect}>Disconnect</button>
+        </div>
+      ) : (
+        <button onClick={connect}>Connect Wallet</button>
+      )}
+    </div>
+  );
+}
+
+export default App;
+

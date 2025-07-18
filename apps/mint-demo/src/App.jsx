@@ -1,65 +1,45 @@
-import React, { useCallback } from "react";
-import { SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { GasPrice } from "@cosmjs/stargate";
 
-const rpc = "https://full-node.testnet-coreum.dev";
-const chainId = "coreum-testnet-1";
-const contract = "core1xjzzfxcsmqskd3v9r0dd2xg8ngc59u3khw6uyn"; // Pre-deployed contract
+const chainId = "coreum-mainnet-1";
+const rpc = "https://full-node.mainnet-1.coreum.dev:26657";
 
 function App() {
-  const mintToken = useCallback(async () => {
+  const handleMint = async () => {
     try {
       if (!window.keplr) {
-        alert("Please install Keplr wallet first.");
+        alert("Keplr not installed.");
         return;
       }
 
       await window.keplr.enable(chainId);
-      const offlineSigner = window.getOfflineSigner(chainId);
-      const accounts = await offlineSigner.getAccounts();
+      const signer = await window.getOfflineSignerAuto(chainId);
+      const gasPrice = GasPrice.fromString("0.075ucore");
+      const client = await SigningCosmWasmClient.connectWithSigner(rpc, signer, { gasPrice });
+
+      const accounts = await signer.getAccounts();
       const sender = accounts[0].address;
 
-      const client = await SigningCosmWasmClient.connectWithSigner(rpc, offlineSigner, {
-        gasPrice: GasPrice.fromString("0.025utestcore"),
-      });
-
       const msg = {
-        mint_pass: {
-          expires_in_days: 30,
-          tier: "standard"
-        }
+        sender,
+        contract: "core1xyz...your_contract_here", // replace with your contract
+        msg: {}, // replace with real payload
+        funds: [],
       };
 
-      const fee = {
-        amount: [{ denom: "utestcore", amount: "500" }],
-        gas: "200000",
-      };
-
-      const result = await client.execute(sender, contract, msg, fee);
-      alert(`✅ Pass minted! TX hash: ${result.transactionHash}`);
-      console.log("Execute result:", result);
+      const result = await client.execute(sender, msg.contract, msg.msg, "auto");
+      console.log("✅ Mint successful:", result);
+      alert("Mint successful!");
     } catch (err) {
       console.error("❌ Execute error:", err);
       alert("Minting failed.");
     }
-  }, []);
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "80px" }}>
-      <img src="/solopass-logo.png" alt="SoloPass Logo" style={{ width: "160px", marginBottom: "20px" }} />
-      <h1 style={{ marginBottom: "20px" }}>SoloPass Mint Demo</h1>
-      <button
-        onClick={mintToken}
-        style={{
-          padding: "10px 20px",
-          fontSize: "16px",
-          borderRadius: "6px",
-          border: "none",
-          backgroundColor: "#1e90ff",
-          color: "#fff",
-          cursor: "pointer",
-        }}
-      >
+    <div style={{ textAlign: "center", marginTop: "5rem" }}>
+      <h1>SoloPass Mint Demo (Mainnet)</h1>
+      <button onClick={handleMint} style={{ padding: "10px 20px" }}>
         Mint Token
       </button>
     </div>
