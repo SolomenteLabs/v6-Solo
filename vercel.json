@@ -1,0 +1,23 @@
+{
+  "projects": {
+    "mint-demo": {
+      "rootDirectory": "apps/mint-demo"
+    }
+  },
+  "builds": [
+    {
+      "src": "apps/mint-demo/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
+
