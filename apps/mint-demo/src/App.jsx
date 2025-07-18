@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "5rem" }}>
-      <h1>SoloPass Mint Demo (Mainnet)</h1>
+      <h1 style={{marginBottom:"20px"}}>SoloPass Mint Demo (Mainnet)</h1>
       <button onClick={handleMint} style={{ padding: "10px 20px" }}>
         Mint Token
       </button>
