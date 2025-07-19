@@ -1,5 +1,4 @@
+
 {
-  "buildCommand": "cd apps/landing && pnpm install && pnpm run build",
-  "outputDirectory": "apps/landing/dist",
-  "ignoreCommand": "git diff --quiet HEAD HEAD -- apps/landing || exit 1"
+  "framework": "vite"
 }
