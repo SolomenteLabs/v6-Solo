@@ -1,6 +1,17 @@
 {
-  "rootDirectory": "apps/mint-demo",
-  "buildCommand": "pnpm run build",
-  "outputDirectory": "dist",
-  "installCommand": "pnpm install"
+  "builds": [
+    {
+      "src": "apps/mint-demo/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
