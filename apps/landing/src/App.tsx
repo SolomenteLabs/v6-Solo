@@ -1,41 +1,82 @@
-import React from 'react';
+import React from "react";
+import { SigningStargateClient } from "@cosmjs/stargate";
 
-function App() {
-  const handleMint = () => {
-    // TODO: Wire to real mint logic or CLI trigger
-    alert('Minting SoloPass Token...');
+const App: React.FC = () => {
+  const handleMint = async () => {
+    try {
+      const chainId = "coreum-mainnet-1";
+      const rpcEndpoint = "https://full-node.mainnet-1.coreum.dev:26657";
+
+      await window.keplr.enable(chainId);
+      const offlineSigner = window.getOfflineSigner(chainId);
+      const accounts = await offlineSigner.getAccounts();
+      const sender = accounts[0].address;
+
+      const client = await SigningStargateClient.connectWithSigner(
+        rpcEndpoint,
+        offlineSigner
+      );
+
+      const msg = {
+        typeUrl: "/coreum.asset.ft.v1.MsgMint",
+        value: {
+          sender: sender,
+          recipient: sender,
+          id: "SOLOPASS", // Replace with your real token ID
+          amount: {
+            amount: "1",
+            denom: "ucore", // Adjust if your smart token uses a different denom
+          },
+        },
+      };
+
+      const fee = {
+        amount: [{ denom: "ucore", amount: "50000" }],
+        gas: "200000",
+      };
+
+      const result = await client.signAndBroadcast(sender, [msg], fee);
+
+      if (result.code === 0) {
+        alert(`✅ Mint Success! TxHash: ${result.transactionHash}`);
+      } else {
+        alert(`❌ Mint Failed: ${result.rawLog}`);
+      }
+    } catch (err) {
+      alert(`❌ Error: ${err.message || err}`);
+    }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', padding: '2rem' }}>
-      <img src="/solopass-logo.png" alt="SoloPass Logo" style={{ width: '120px', marginBottom: '1.5rem' }} />
-      <h1 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '1.5rem', textAlign: 'center' }}>
-        SoloPass Mint Demo <span style={{ color: '#888' }}>(Coreum Mainnet)</span>
+    <div style={{ textAlign: "center", paddingTop: "100px" }}>
+      <img
+        src="/logo.png"
+        alt="SoloPass"
+        style={{ width: "100px", marginBottom: "20px" }}
+      />
+      <h1>
+        SoloPass Mint Demo <span style={{ color: "gray" }}>(Coreum Mainnet)</span>
       </h1>
       <button
         onClick={handleMint}
         style={{
-          padding: '12px 24px',
-          fontSize: '1rem',
-          fontWeight: 500,
-          borderRadius: '8px',
-          border: 'none',
-          backgroundColor: '#111',
-          color: '#fff',
-          cursor: 'pointer',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-          transition: 'background-color 0.3s ease',
+          marginTop: "20px",
+          padding: "10px 20px",
+          fontSize: "16px",
+          borderRadius: "8px",
+          cursor: "pointer",
+          backgroundColor: "#000",
+          color: "#fff",
         }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#333')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#111')}
       >
         Mint SoloPass Token
       </button>
-      <p style={{ marginTop: '3rem', fontSize: '0.9rem', color: '#888' }}>
+      <p style={{ marginTop: "40px", color: "#888" }}>
         Powered by Coreum Smart Tokens · Built by Solomente Labs
       </p>
     </div>
   );
-}
+};
 
 export default App;
+
