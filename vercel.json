@@ -1,8 +1,5 @@
 {
-  "buildCommand": "cd apps/mint-demo && pnpm install && pnpm run build",
-  "outputDirectory": "apps/mint-demo/dist",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "buildCommand": "cd apps/landing && pnpm install && pnpm run build",
+  "outputDirectory": "apps/landing/dist",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD apps/landing"
 }
