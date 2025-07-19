@@ -1,3 +1,17 @@
 {
-  "name": "mint-demo"
+  "builds": [
+    {
+      "src": "apps/landing/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "apps/landing/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
