@@ -1,0 +1,6 @@
+{
+  "rootDirectory": "apps/mint-demo",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install"
+}
