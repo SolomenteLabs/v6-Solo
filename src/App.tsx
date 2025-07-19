@@ -5,6 +5,15 @@ import { useWallet } from "@cosmos-kit/react";
 const rpcEndpoint = "https://full-node.mainnet-1.coreum.dev:26657";
 const chainId = "coreum-mainnet-1";
 
+
+<img
+  src="/solopass-logo.png"
+  alt="SoloPass Logo"
+  style={{ width: '150px', display: 'block', margin: '0 auto 20px auto' }}
+/>
+
+
+
 function App() {
   const { connect, disconnect, connected, getOfflineSigner, address } = useWallet();
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null);

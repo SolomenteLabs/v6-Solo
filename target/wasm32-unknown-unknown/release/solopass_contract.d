@@ -1,0 +1,1 @@
+/home/william/projects/v6-solo/target/wasm32-unknown-unknown/release/solopass_contract.wasm: /home/william/projects/v6-solo/solopass-contract/src/lib.rs /home/william/projects/v6-solo/solopass-contract/src/msg.rs
